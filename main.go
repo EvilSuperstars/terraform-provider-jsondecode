@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ewbankkit/EvilSuperstars/decode"
+	"github.com/ewbankkit/terraform-provider-jsondecode/decode"
 	"github.com/hashicorp/terraform/plugin"
 )
 
