@@ -26,13 +26,25 @@ func dataSourceDecode() *schema.Resource {
 				},
 			},
 
+			"result_boolean": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+
 			"result_list": {
 				Type:     schema.TypeList,
 				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
 			"result_map": {
 				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+
+			"result_number": {
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 
@@ -52,16 +64,54 @@ func dataSourceRead(d *schema.ResourceData, meta interface{}) error {
 
 	switch v := input.(type) {
 	case []interface{}:
-		d.Set("result_list", v)
-		break
+		l, err := stringList(v)
+		if err != nil {
+			return err
+		}
+		d.Set("result_list", l)
 	case map[string]interface{}:
-		d.Set("result_map", v)
-	default:
+		m, err := stringToStringMap(v)
+		if err != nil {
+			return err
+		}
+		d.Set("result_map", m)
+	case string:
 		d.Set("result_string", v)
-		break
+	case float64:
+		d.Set("result_number", v)
+	case bool:
+		d.Set("result_boolean", v)
+	default:
+		return fmt.Errorf("unsupported top-level type: %T", v)
 	}
 
 	d.SetId(time.Now().UTC().String())
 
 	return nil
+}
+
+func stringList(v []interface{}) ([]string, error) {
+	l := make([]string, 0)
+	for _, value := range v {
+		if s, ok := value.(string); ok {
+			l = append(l, s)
+		} else {
+			return nil, fmt.Errorf("unsupported array element type: %T", value)
+		}
+	}
+
+	return l, nil
+}
+
+func stringToStringMap(v map[string]interface{}) (map[string]string, error) {
+	m := make(map[string]string)
+	for key, value := range v {
+		if s, ok := value.(string); ok {
+			m[key] = s
+		} else {
+			return nil, fmt.Errorf("unsupported map value type: %T", value)
+		}
+	}
+
+	return m, nil
 }

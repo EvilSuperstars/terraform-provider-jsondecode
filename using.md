@@ -14,12 +14,8 @@ provider "jsondecode" {}
 data "jsondecode_decode" "foo" {
   input =<<EOS
 {
-  "locations": [
-    {"name": "Seattle", "state": "WA"},
-    {"name": "New York", "state": "NY"},
-    {"name": "Bellevue", "state": "WA"},
-    {"name": "Olympia", "state": "WA"}
-  ]
+  "name": "Seattle",
+  "state": "WA"
 }
 EOS
 }
@@ -33,12 +29,14 @@ EOS
 
 The following arguments are supported:
 
-* `input` - (Required, string) The JSON string that is to be decoded.
+* `input` - (Required, string) The JSON string that is to be decoded. The subset of JSON that can be decoded is limited - boolean, number, string, list of strings or string-to-string map.
 
 #### Attributes Reference
 
 The following attributes are exported in addition to the above configuration:
 
-* `result_list` - (list)
-* `result_map` - (map)
-* `result_string` - (string)
+* `result_boolean` - (boolean) Boolean
+* `result_list` - (list) List of strings
+* `result_map` - (map) String-to-string map
+* `result_number` - (float) Number
+* `result_string` - (string) String
