@@ -29,14 +29,14 @@ EOS
 
 The following arguments are supported:
 
-* `input` - (Required, string) The JSON string that is to be decoded. The subset of JSON that can be decoded is limited - boolean, number, string, list of strings or string-to-string map.
+* `input` - (Required, string) The JSON string that is to be decoded. The subset of JSON that can be decoded is limited - boolean, number, string, object with string values and array of strings.
 
 #### Attributes Reference
 
 The following attributes are exported in addition to the above configuration:
 
-* `result_boolean` - (boolean) Boolean
-* `result_list` - (list) List of strings
-* `result_map` - (map) String-to-string map
-* `result_number` - (float) Number
-* `result_string` - (string) String
+* `boolean` - (boolean) Boolean
+* `number` - (float) Number
+* `string` - (string) String
+* `object` - (map) Object with string values
+* `string_array` - (list) Array of strings

@@ -36,7 +36,7 @@ EOS
 }
 `
 
-const testDataSourceConfig_list = `
+const testDataSourceConfig_string_array = `
 provider "jsondecode" {}
 
 data "jsondecode_decode" "foo" {
@@ -46,7 +46,7 @@ EOS
 }
 `
 
-const testDataSourceConfig_map = `
+const testDataSourceConfig_object = `
 provider "jsondecode" {}
 
 data "jsondecode_decode" "foo" {
@@ -59,6 +59,26 @@ EOS
 }
 `
 
+const testDataSourceConfig_empty_object = `
+provider "jsondecode" {}
+
+data "jsondecode_decode" "foo" {
+  input =<<EOS
+	{}
+EOS
+}
+`
+
+const testDataSourceConfig_empty_array = `
+provider "jsondecode" {}
+
+data "jsondecode_decode" "foo" {
+  input =<<EOS
+	[]
+EOS
+}
+`
+
 func TestDataSource_basic(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		Providers: testProviders,
@@ -66,51 +86,73 @@ func TestDataSource_basic(t *testing.T) {
 			{
 				Config: testDataSourceConfig_boolean,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "result_boolean", "true"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_list"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_map"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_number"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_string"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "boolean", "true"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string_array"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
 				),
 			},
 			{
 				Config: testDataSourceConfig_string,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_boolean"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_list"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_map"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_number"),
-					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "result_string", "SSS"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string_array"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "string", "SSS"),
 				),
 			},
 			{
 				Config: testDataSourceConfig_number,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_boolean"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_list"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_map"),
-					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "result_number", "123"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_string"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string_array"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "number", "123"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
 				),
 			},
 			{
-				Config: testDataSourceConfig_list,
+				Config: testDataSourceConfig_string_array,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_boolean"),
-					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "result_list.#", "2"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_map"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_number"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_string"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "string_array.#", "2"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "string_array.0", "ABC"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
 				),
 			},
 			{
-				Config: testDataSourceConfig_map,
+				Config: testDataSourceConfig_empty_array,
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_boolean"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_list"),
-					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "result_map.state", "DC"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_number"),
-					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "result_string"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "string_array.#", "0"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
+				),
+			},
+			{
+				Config: testDataSourceConfig_object,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string_array"),
+					resource.TestCheckResourceAttr("data.jsondecode_decode.foo", "object.state", "DC"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
+				),
+			},
+			{
+				Config: testDataSourceConfig_empty_object,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "boolean"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string_array"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object_array"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "object"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "number"),
+					resource.TestCheckNoResourceAttr("data.jsondecode_decode.foo", "string"),
 				),
 			},
 		},
