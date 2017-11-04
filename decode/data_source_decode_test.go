@@ -19,9 +19,14 @@ EOS
 const testDataSourceConfig_string = `
 provider "jsondecode" {}
 
+variable "s" {
+  type = "string"
+  default = "SSS"
+}
+
 data "jsondecode_decode" "foo" {
   input =<<EOS
-	"SSS"
+	"${var.s}"
 EOS
 }
 `
