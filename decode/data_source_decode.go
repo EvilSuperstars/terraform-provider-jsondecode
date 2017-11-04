@@ -57,16 +57,16 @@ func dataSourceDecode() *schema.Resource {
 				},
 			},
 
-			"object_array": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					Elem: &schema.Schema{
-						Type: schema.TypeString,
-					},
-				},
-			},
+			// "object_array": {
+			// 	Type:     schema.TypeList,
+			// 	Computed: true,
+			// 	Elem: &schema.Schema{
+			// 		Type: schema.TypeString,
+			// 		Elem: &schema.Schema{
+			// 			Type: schema.TypeString,
+			// 		},
+			// 	},
+			// },
 		},
 	}
 }
@@ -91,12 +91,12 @@ func dataSourceRead(d *schema.ResourceData, meta interface{}) error {
 				return err
 			}
 			d.Set("string_array", a)
-		case map[string]interface{}:
-			a, err := objectArray(v)
-			if err != nil {
-				return err
-			}
-			d.Set("object_array", a)
+		// case map[string]interface{}:
+		// 	a, err := objectArray(v)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	d.Set("object_array", a)
 		default:
 			return fmt.Errorf("unsupported array element type: %T", v0)
 		}
@@ -134,22 +134,22 @@ func stringArray(v []interface{}) ([]string, error) {
 	return a, nil
 }
 
-func objectArray(v []interface{}) ([]map[string]string, error) {
-	a := make([]map[string]string, 0)
-	for _, value := range v {
-		if m, ok := value.(map[string]interface{}); ok {
-			o, err := object(m)
-			if err != nil {
-				return nil, err
-			}
-			a = append(a, o)
-		} else {
-			return nil, fmt.Errorf("unsupported array element type in object array: %T", value)
-		}
-	}
+// func objectArray(v []interface{}) ([]map[string]string, error) {
+// 	a := make([]map[string]string, 0)
+// 	for _, value := range v {
+// 		if m, ok := value.(map[string]interface{}); ok {
+// 			o, err := object(m)
+// 			if err != nil {
+// 				return nil, err
+// 			}
+// 			a = append(a, o)
+// 		} else {
+// 			return nil, fmt.Errorf("unsupported array element type in object array: %T", value)
+// 		}
+// 	}
 
-	return a, nil
-}
+// 	return a, nil
+// }
 
 func object(v map[string]interface{}) (map[string]string, error) {
 	o := make(map[string]string)

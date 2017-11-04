@@ -29,7 +29,7 @@ EOS
 
 The following arguments are supported:
 
-* `input` - (Required, string) The JSON string that is to be decoded. The subset of JSON that can be decoded is limited - boolean, number, string, object with string values, array of strings and array of objects with string values.
+* `input` - (Required, string) The JSON string that is to be decoded. The subset of JSON that can be decoded is limited - boolean, number, string, object with string values and array of strings.
 
 #### Attributes Reference
 
@@ -40,4 +40,3 @@ The following attributes are exported in addition to the above configuration:
 * `string` - (string) String
 * `object` - (map) Object with string values
 * `string_array` - (list) Array of strings
-* `object_array` - (list) Array of objects with string values
