@@ -1,6 +1,8 @@
 Terraform `jsondecode` Provider
 ==============================
 
+## This Terraform provider has been obsoleted by the new Terraform 0.12 [`jsondecode`](https://www.terraform.io/docs/configuration/functions/jsondecode.html) interpolation function.
+
 Requirements
 ------------
 
