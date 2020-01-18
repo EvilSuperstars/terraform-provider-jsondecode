@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"strconv"
 )
 
 func dataSourceDecode() *schema.Resource {
@@ -57,16 +58,13 @@ func dataSourceDecode() *schema.Resource {
 				},
 			},
 
-			// "object_array": {
-			// 	Type:     schema.TypeList,
-			// 	Computed: true,
-			// 	Elem: &schema.Schema{
-			// 		Type: schema.TypeString,
-			// 		Elem: &schema.Schema{
-			// 			Type: schema.TypeString,
-			// 		},
-			// 	},
-			// },
+			"object_array": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -91,12 +89,12 @@ func dataSourceRead(d *schema.ResourceData, meta interface{}) error {
 				return err
 			}
 			d.Set("string_array", a)
-		// case map[string]interface{}:
-		// 	a, err := objectArray(v)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	d.Set("object_array", a)
+		case map[string]interface{}:
+			a, err := objectArray(v)
+			if err != nil {
+				return err
+			}
+			d.Set("object_array", a)
 		default:
 			return fmt.Errorf("unsupported array element type: %T", v0)
 		}
@@ -134,22 +132,37 @@ func stringArray(v []interface{}) ([]string, error) {
 	return a, nil
 }
 
-// func objectArray(v []interface{}) ([]map[string]string, error) {
-// 	a := make([]map[string]string, 0)
-// 	for _, value := range v {
-// 		if m, ok := value.(map[string]interface{}); ok {
-// 			o, err := object(m)
-// 			if err != nil {
-// 				return nil, err
-// 			}
-// 			a = append(a, o)
-// 		} else {
-// 			return nil, fmt.Errorf("unsupported array element type in object array: %T", value)
-// 		}
-// 	}
+func objectArray(v []interface{}) (map[string]string, error) {
+	index := 0
+	a := make(map[string]string, 0)
+	for _, value := range v {
+		if m, ok := value.(map[string]interface{}); ok {
+			err := addObject(m, a, index)
+			if err != nil {
+				return nil, err
+			}
+			index += 1
+		} else {
+			return nil, fmt.Errorf("unsupported array element type in object array: %T", value)
+		}
+	}
+	//Without this line it doesn't work, I don't really know why
+	a["%"] = strconv.Itoa(index)
+	//return o, nil
+	return a, nil
+}
 
-// 	return a, nil
-// }
+func addObject(v map[string]interface{}, m map[string]string, index int)  error {
+	for key, value := range v {
+		if s, ok := value.(string); ok {
+			m[strconv.Itoa(index) + "." + key] = s
+		} else {
+			return fmt.Errorf("unsupported object value type: %T", value)
+		}
+	}
+
+	return nil
+}
 
 func object(v map[string]interface{}) (map[string]string, error) {
 	o := make(map[string]string)
